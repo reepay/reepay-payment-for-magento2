@@ -1,5 +1,5 @@
 {
-    "name": "radarsofthouse/reepay",
+    "name": "reepay-payment/reepay-magento2-module",
     "description": "Reepay payment for Magento 2",
     "type": "magento2-module",
     "version": "1.2.8",
