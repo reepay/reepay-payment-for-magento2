@@ -1,5 +1,25 @@
 
 # Changelog
+## Version 1.2.14 on 1 November 2021
+- Fixed wrong prices and total on multistore setup
+
+## Version 1.2.13 on 27 October 2021
+- Allowed blank value for payment icons configuration.
+- Fixed payment icons issue when the payment icons setting is empty.
+- Updated the "reepay_surcharge_fee" extension attribute.
+
+## Version 1.2.12 on 25 October 2021
+- Added module version in the backend.
+
+## Version 1.2.11 on 14 October 2021
+- Fixed restore cart issue (restore when empty cart only). The issue related to V 1.2.8
+
+## Version 1.2.10 on 7 October 2021
+- Delete the charge when order is canceled from Magento (only not paid order). So, user cannot pay after cancel order.
+
+## Version 1.2.9 on 6 October 2021
+- Fix deprecated load method in SurchargeFee.php by @puntable
+
 ## Version 1.2.8 on 8 September 2021
 - Restore the last order when back from window payment.
 
