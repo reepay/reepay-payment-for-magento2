@@ -2,32 +2,58 @@
 
 namespace Radarsofthouse\Reepay\Observer;
 
-/**
- * Class SalesOrderPaymentCapture observer 'sales_order_payment_capture' event
- *
- * @package Radarsofthouse\Reepay\Observer
- */
 class SalesOrderPaymentCapture implements \Magento\Framework\Event\ObserverInterface
 {
+    /**
+     * @var \Radarsofthouse\Reepay\Helper\Data
+     */
     protected $reepayHelper;
+
+    /**
+     * @var \Radarsofthouse\Reepay\Helper\Logger
+     */
     protected $logger;
+
+    /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
     protected $messageManager;
+
+    /**
+     * @var \Radarsofthouse\Reepay\Helper\Charge
+     */
     protected $reepayCharge;
 
+    /**
+     * @var \\Magento\Framework\Registry
+     */
+    protected $registry;
+
+    /**
+     * Constructor
+     *
+     * @param \Radarsofthouse\Reepay\Helper\Data $reepayHelper
+     * @param \Radarsofthouse\Reepay\Helper\Logger $logger
+     * @param \Magento\Framework\Message\ManagerInterface $messageManager
+     * @param \Radarsofthouse\Reepay\Helper\Charge $reepayCharge
+     * @param \Magento\Framework\Registry $registry
+     */
     public function __construct(
         \Radarsofthouse\Reepay\Helper\Data $reepayHelper,
         \Radarsofthouse\Reepay\Helper\Logger $logger,
         \Magento\Framework\Message\ManagerInterface $messageManager,
-        \Radarsofthouse\Reepay\Helper\Charge $reepayCharge
+        \Radarsofthouse\Reepay\Helper\Charge $reepayCharge,
+        \Magento\Framework\Registry $registry
     ) {
         $this->reepayHelper = $reepayHelper;
         $this->logger = $logger;
         $this->messageManager = $messageManager;
         $this->reepayCharge = $reepayCharge;
+        $this->registry = $registry;
     }
 
     /**
-     * sales_order_payment_capture observer
+     * Observe sales_order_payment_capture
      *
      * @param \Magento\Framework\Event\Observer $observer
      * @return void
@@ -39,7 +65,8 @@ class SalesOrderPaymentCapture implements \Magento\Framework\Event\ObserverInter
         $invoice = $observer->getInvoice();
         $paymentMethod = $payment->getMethod();
         if ($this->reepayHelper->isReepayPaymentMethod($paymentMethod)) {
-            if ($paymentMethod === 'reepay_swish') {
+            if ($payment->getMethodInstance()->isAutoCapture()) {
+                $this->logger->addDebug("Skip settle request to Reepay for the 'auto_capture' payment.");
                 return;
             }
 
@@ -51,7 +78,7 @@ class SalesOrderPaymentCapture implements \Magento\Framework\Event\ObserverInter
                 $order->getIncrementId()
             );
 
-            if( $this->reepayHelper->getConfig('auto_capture', $order->getStoreId()) ){
+            if ($this->reepayHelper->getConfig('auto_capture', $order->getStoreId())) {
                 if (!empty($reepay_charge)) {
                     if ($reepay_charge['state'] == 'settled') {
                         $this->logger->addDebug("auto capture is enabled : skip to settle again");
@@ -61,37 +88,53 @@ class SalesOrderPaymentCapture implements \Magento\Framework\Event\ObserverInter
             }
 
             $amount = $invoice->getGrandTotal();
-            $originalAmount  = $order->getGrandTotal();
 
-            if ($amount > $order->getGrandTotal()) {
-                $amount = $order->getGrandTotal();
+            if (isset($reepay_charge['authorized_amount']) && $reepay_charge['authorized_amount'] > 0) {
+                $tmp_amount = $amount;
+                $authorized_amount  = $reepay_charge['authorized_amount'];
+                
+                if ($this->reepayHelper->toInt($amount * 100) > $authorized_amount) {
+                    $amount = $authorized_amount/100;
+                }
+                if ($amount != $tmp_amount) {
+                    $this->logger->addDebug(
+                        "Change capture amount from {$tmp_amount} to {$amount} for order" . $order->getIncrementId()
+                    );
+                }
             }
 
-            if ($amount != $originalAmount) {
-                $this->logger->addDebug("Change capture amount from {$amount} to {$originalAmount} for order" . $order->getIncrementId());
-            }
-
-            $this->logger->addDebug(__METHOD__, ['capture : ' . $order->getIncrementId() . ', amount : ' . $amount]);
+            $this->logger->addDebug(
+                __METHOD__,
+                ['capture : ' . $order->getIncrementId() . ', amount : ' . $amount]
+            );
 
             $options = [];
             
-            if( $this->reepayHelper->getConfig('send_order_line', $order->getStoreId()) ){
+            if ($this->reepayHelper->getConfig('send_order_line', $order->getStoreId())) {
                 $options['order_lines'] = $this->reepayHelper->getOrderLinesFromInvoice($invoice);
-            }else{
-                $options['amount'] = $amount*100;
+            } else {
+                $_amount = $amount * 100;
+                $options['amount'] = $this->reepayHelper->toInt($_amount);
             }
 
-            $charge = $this->reepayCharge->settle(
-                $apiKey,
-                $order->getIncrementId(),
-                $options
-            );
+            $charge = null;
+            if( $this->registry->registry('is_reepay_settled_webhook') == 1 ){
+                // When invoice created from the settled webhook then don't do the settle request to Reepay
+                $this->logger->addDebug("Skip settle request to Reepay when invoice is created from Reepay settled webhook");
+                $charge = $reepay_charge;
+            }else{
+                $charge = $this->reepayCharge->settle(
+                    $apiKey,
+                    $order->getIncrementId(),
+                    $options
+                );
+            }
 
             if (!empty($charge)) {
                 if (isset($charge["error"])) {
                     $this->logger->addDebug("settle error : ", $charge);
                     $error_message = $charge["error"];
-                    if( isset($charge["message"]) ){
+                    if (isset($charge["message"])) {
                         $error_message = $charge["error"]." : ".$charge["message"];
                     }
                     throw new \Magento\Framework\Exception\LocalizedException(__($error_message));

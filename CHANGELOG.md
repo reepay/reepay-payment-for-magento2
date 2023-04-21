@@ -1,5 +1,70 @@
 
 # Changelog
+## Version 1.2.33 on 17 February 2023
+- Changed "AnyDay" to "Anyday"
+
+## Version 1.2.32 on 27 January 2023
+- Supported Magento 2.2.x and below
+
+## Version 1.2.31 on 24 January 2023
+- Checked compatible with Magento 2.4.5
+
+## Version 1.2.30 on 13 January 2023
+- Changed "iDEAL" payment to the "auto_captute" payment flow.
+
+## Version 1.2.29 on 11 January 2023
+- Added new payment method "Bancontact".
+- Remove "SEPA Direct Debit" and "Verkkopankki" from payment options of main method.
+
+## Version 1.2.28 on 4 January 2023
+- Added new payment method "AnyDay".
+
+## Version 1.2.27 on 20 December 2022
+- Added new payment methods "Klarna Direct Bank Transfer" and "Klarna Direct Debit".
+
+## Version 1.2.26 on 3 October 2022
+- Fixed PHP error when get error response from Reepay API.
+- Added automatic create invoice option when full amount is settled in Reepay.
+- Changed "SEPA Direct Debit" and "Verkkopankki" payments to the "auto_captute" payment flow.
+- Automatic create invoice for the "auto_capture" payments ("Swish", "SEPA Direct Debit" and "Verkkopankki").
+
+## Version 1.2.25 on 15 September 2022
+- Fixed order status issue for Swish payment.
+
+## Version 1.2.24 on 20 July 2022
+- Add all payment source data to payment additional information.
+
+## Version 1.2.23 on 11 July 2022
+- Add new payment methods "iDEAL", "BLIK", "Przelewy24 (P24)", "Verkkopankki", "giropay" and "SEPA Direct Debit".
+
+## Version 1.2.22 on 20 June 2022
+- Fixed duplicate credit card saving issue for CIT.
+
+## Version 1.2.21 on 13 June 2022
+- Fixed canceleration order for pending order.
+- Fixed restore the last order when back from window payment when use swissup firecheckout.
+- Fixed typo in PaymentException path
+
+## Version 1.2.20 on 26 April 2022
+- Not allowed order cancelation via payment window for the order that is paid.
+- Compatible with Magento 2.4.4
+
+## Version 1.2.19 on 23 March 2022
+- Magento coding standard for Magento Marketplace.
+- Fixed error when checkout with multiple shipping address action.
+
+## Version 1.2.18 on 9 February 2022
+- Change capture amount condition in capture function 
+
+## Version 1.2.17 on 9 February 2022
+- Fixed parse int issue.
+
+## Version 1.2.16 on 16 December 2021
+- Fixed Toolbar Plugin error in order view backend.
+
+## Version 1.2.15 on 14 December 2021
+- Add "Send payment link" button in order view backend.
+
 ## Version 1.2.14 on 1 November 2021
 - Fixed wrong prices and total on multistore setup
 

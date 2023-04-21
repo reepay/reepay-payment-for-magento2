@@ -21,6 +21,14 @@ class InstallSchema implements InstallSchemaInterface
         SchemaSetupInterface $setup,
         ModuleContextInterface $context
     ) {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productMetadata = $objectManager->get(\Magento\Framework\App\ProductMetadataInterface::class);
+        $magentoMinorVersion = (int)explode(".", $productMetadata->getVersion())[1];
+        if($magentoMinorVersion >= 3 ){
+            return;
+        }
+
+
         $table_radarsofthouse_reepay_status = $setup->getConnection()->newTable($setup->getTable('radarsofthouse_reepay_status'));
 
         $table_radarsofthouse_reepay_status->addColumn(

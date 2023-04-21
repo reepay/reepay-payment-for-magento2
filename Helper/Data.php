@@ -5,47 +5,74 @@ namespace Radarsofthouse\Reepay\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Store\Model\ScopeInterface;
 
-/**
- * Class Data
- *
- * @package Radarsofthouse\Reepay\Helper
- */
 class Data extends AbstractHelper
 {
     const CONFIG_PATH = 'payment/reepay_payment/';
     const REEPAY_PAYMENT_METHODS = [
         'reepay_payment',
         'reepay_viabill',
+        'reepay_anyday',
         'reepay_mobilepay',
         'reepay_applepay',
         'reepay_paypal',
         'reepay_klarnapaynow',
         'reepay_klarnapaylater',
         'reepay_klarnasliceit',
+        'reepay_klarnadirectbanktransfer',
+        'reepay_klarnadirectdebit',
         'reepay_swish',
         'reepay_resurs',
         'reepay_vipps',
         'reepay_forbrugsforeningen',
         'reepay_googlepay',
+        'reepay_ideal',
+        'reepay_blik',
+        'reepay_p24',
+        'reepay_verkkopankki',
+        'reepay_giropay',
+        'reepay_sepa',
+        'reepay_bancontact'
     ];
 
+    /**
+     * @var \Magento\Store\Model\StoreManagerInterface
+     */
     protected $_storeManager;
+
+    /**
+     * @var \Magento\Framework\Locale\Resolver
+     */
     protected $_resolver;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $_scopeConfig;
+
+    /**
+     * @var \Radarsofthouse\Reepay\Model\Status
+     */
     protected $_reepayStatus;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface
+     */
     protected $_transactionBuilder;
+
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
     protected $_priceHelper;
 
     /**
      * Constructor
      *
-     * @param \Magento\Framework\App\Helper\Context  $context
+     * @param \Magento\Framework\App\Helper\Context $context
      * @param \Magento\Store\Model\StoreManagerInterface $storeManager
      * @param \Magento\Framework\Locale\Resolver $resolver
-     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Radarsofthouse\Reepay\Model\Status $reepayStatus
      * @param \Magento\Sales\Model\Order\Payment\Transaction\BuilderInterface $transactionBuilder
-     * @param \Magento\Framework\Exception $exception
      * @param \Magento\Framework\Pricing\Helper\Data $priceHelper
      */
     public function __construct(
@@ -67,8 +94,10 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $field
-     * @param null $storeId
+     * Get module configuration by field
+     *
+     * @param string $field
+     * @param int $storeId
      * @return mixed
      */
     public function getConfigValue($field, $storeId = null)
@@ -77,8 +106,10 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $code
-     * @param null $storeId
+     * Get modile configuration
+     *
+     * @param string $code
+     * @param int $storeId
      * @return mixed
      */
     public function getConfig($code, $storeId = null)
@@ -87,7 +118,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * get private api key from backend configuration
+     * Get private api key from backend configuration
      *
      * @param integer $storeId
      * @return string $apiKey
@@ -110,9 +141,9 @@ class Data extends AbstractHelper
     }
 
     /**
-     * set reepay payment state to radarsofthouse_reepay_status
+     * Set reepay payment state to radarsofthouse_reepay_status
      *
-     * @param  $payment
+     * @param \Magento\Sales\Model\Order\Payment $payment
      * @param string $state
      * @return void
      */
@@ -132,7 +163,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * update reepay payment data to radarsofthouse_reepay_status
+     * Update reepay payment data to radarsofthouse_reepay_status
      *
      * @param string $orderId
      * @param array $data
@@ -178,7 +209,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * get customer data from order
+     * Get customer data from order
      *
      * @param \Magento\Sales\Model\Order $order
      * @return array (customer data)
@@ -218,7 +249,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * get billing address from order
+     * Get billing address from order
      *
      * @param \Magento\Sales\Model\Order $order
      * @return array (billing address data)
@@ -268,14 +299,14 @@ class Data extends AbstractHelper
     }
 
     /**
-     * get shipping address from order
+     * Get shipping address from order
      *
      * @param \Magento\Sales\Model\Order $order
      * @return array (shipping address data)
      */
     public function getOrderShippingAddress($order)
     {
-        if(null === $order->getShippingAddress()){
+        if (null === $order->getShippingAddress()) {
             return $this->getOrderBillingAddress($order);
         }
 
@@ -305,7 +336,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * get order lines data from order
+     * Get order lines data from order
      *
      * @param \Magento\Sales\Model\Order $order
      * @return array $orderLines
@@ -374,7 +405,7 @@ class Data extends AbstractHelper
         $discountAmount = ($order->getDiscountAmount() * 100);
         if ($discountAmount != 0) {
             $line = [
-                'ordertext' => !empty($order->getDiscountDescription())? __('Discount: %1',$order->getDiscountDescription())->render() :  __('Discount')->render(),
+                'ordertext' => !empty($order->getDiscountDescription())? __('Discount: %1', $order->getDiscountDescription())->render() :  __('Discount')->render(),
                 'amount' => $this->toInt($discountAmount),
                 'quantity' => 1,
                 'vat' => 0,
@@ -401,7 +432,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * get order lines from invoice
+     * Get order lines from invoice
      *
      * @param \Magento\Sales\Model\Order\Invoice $invoice
      * @return array $orderLines
@@ -457,7 +488,7 @@ class Data extends AbstractHelper
         $discountAmount = ($invoice->getDiscountAmount() * 100);
         if ($discountAmount != 0) {
             $line = [
-                'ordertext' => !empty($invoice->getDiscountDescription())? __('Discount: %1',$invoice->getDiscountDescription())->render() :  __('Discount')->render(),
+                'ordertext' => !empty($invoice->getDiscountDescription())? __('Discount: %1', $invoice->getDiscountDescription())->render() :  __('Discount')->render(),
                 'amount' => $this->toInt($discountAmount),
                 'quantity' => 1,
                 'vat' => 0,
@@ -484,17 +515,21 @@ class Data extends AbstractHelper
     }
 
     /**
-     * convert variable to integer
+     * Convert variable to integer
      *
+     * @param float|string $number
      * @return int
      */
     public function toInt($number)
     {
+        if (gettype($number) == "double") {
+            $number = round($number);
+        }
         return (int)($number . "");
     }
 
     /**
-     * get allowwed payment from backend configuration
+     * Get allowwed payment from backend configuration
      *
      * @param \Magento\Sales\Model\Order $order
      * @return array $paymentMethods
@@ -506,6 +541,9 @@ class Data extends AbstractHelper
         switch ($orderPaymentMethod) {
             case 'reepay_viabill':
                 $paymentMethods[] = 'viabill';
+                break;
+            case 'reepay_anyday':
+                $paymentMethods[] = 'anyday';
                 break;
             case 'reepay_mobilepay':
                 $paymentMethods[] = 'mobilepay';
@@ -525,6 +563,12 @@ class Data extends AbstractHelper
             case 'reepay_klarnasliceit':
                 $paymentMethods[] = 'klarna_slice_it';
                 break;
+            case 'reepay_klarnadirectbanktransfer':
+                $paymentMethods[] = 'klarna_direct_bank_transfer';
+                break;
+            case 'reepay_klarnadirectdebit':
+                $paymentMethods[] = 'klarna_direct_debit';
+                break;
             case 'reepay_swish':
                 $paymentMethods[] = 'swish';
                 break;
@@ -540,6 +584,27 @@ class Data extends AbstractHelper
             case 'reepay_googlepay':
                 $paymentMethods[] = 'googlepay';
                 break;
+            case 'reepay_ideal':
+                $paymentMethods[] = 'ideal';
+                break;
+            case 'reepay_blik':
+                $paymentMethods[] = 'blik';
+                break;
+            case 'reepay_p24':
+                $paymentMethods[] = 'p24';
+                break;
+            case 'reepay_verkkopankki':
+                $paymentMethods[] = 'verkkopankki';
+                break;
+            case 'reepay_giropay':
+                $paymentMethods[] = 'giropay';
+                break;
+            case 'reepay_sepa':
+                $paymentMethods[] = 'sepa';
+                break;
+            case 'reepay_bancontact':
+                $paymentMethods[] = 'bancontact';
+                break;
             default:
                 $allowedPaymentConfig = $this->getConfig('allowwed_payment', $order->getStoreId());
                 $paymentMethods = explode(',', $allowedPaymentConfig);
@@ -549,7 +614,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * prepare payment data
+     * Prepare payment data
      *
      * @param array $paymentData
      * @return array $paymentData
@@ -572,29 +637,8 @@ class Data extends AbstractHelper
             $source = $paymentData['source'];
             unset($paymentData['source']);
 
-            if (isset($source['type'])) {
-                $paymentData['source_type'] = $source['type'];
-            }
-            if (isset($source['fingerprint'])) {
-                $paymentData['source_fingerprint'] = $source['fingerprint'];
-            }
-            if (isset($source['provider'])) {
-                $paymentData['source_provider'] = $source['provider'];
-            }
-            if (isset($source['card_type'])) {
-                $paymentData['source_card_type'] = $source['card_type'];
-            }
-            if (isset($source['exp_date'])) {
-                $paymentData['source_exp_date'] = $source['exp_date'];
-            }
-            if (isset($source['masked_card'])) {
-                $paymentData['source_masked_card'] = $source['masked_card'];
-            }
-            if (isset($source['type'])) {
-                $paymentData['source_type'] = $source['type'];
-            }
-            if (isset($source['auth_transaction'])) {
-                $paymentData['source_auth_transaction'] = $source['auth_transaction'];
+            foreach ($source as $key => $value) {
+                $paymentData['source_'.$key] = $value;
             }
         }
 
@@ -614,7 +658,7 @@ class Data extends AbstractHelper
     }
 
     /**
-     * add transaction to order
+     * Add transaction to order
      *
      * @param \Magento\Sales\Model\Order $order
      * @param array $paymentData
@@ -670,9 +714,8 @@ class Data extends AbstractHelper
             }
 
             return  $transaction->getTransactionId();
-        } catch (Exception $e) {
-            throw new \Magento\framework\Exception\PaymentException(__('addTransactionToOrder() Exception : ' . $e->getMessage()));
-
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\PaymentException(__('addTransactionToOrder() Exception : ' . $e->getMessage()));
             return;
         }
     }
@@ -707,9 +750,10 @@ class Data extends AbstractHelper
      *
      * @param \Magento\Sales\Model\Order $order
      * @param array $transactionData
+     * @param array $chargeRes
      * @return int (Magento Transaction ID)
      */
-    public function addCaptureTransactionToOrder($order, $transactionData = [], $chargeRes = [])
+    public function addCaptureTransactionToOrder($order, $transactionData = [], $chargeRes = [], $authorizationTxnId = null)
     {
         try {
             // prepare transaction data
@@ -725,6 +769,7 @@ class Data extends AbstractHelper
             $payment->setAdditionalInformation(
                 [\Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS => (array) $paymentData]
             );
+            $payment->setParentTransactionId($authorizationTxnId);
 
             $formatedPrice = $order->getBaseCurrency()->formatTxt($transactionData['amount']);
             $message = __('Reepay : Captured amount of %1 by Reepay webhook.', $formatedPrice);
@@ -742,7 +787,6 @@ class Data extends AbstractHelper
                 $transaction,
                 $message
             );
-            $payment->setParentTransactionId(null);
             $payment->save();
             $order->save();
 
@@ -750,6 +794,12 @@ class Data extends AbstractHelper
 
             $orderStatusAfterPayment = $this->getConfig('order_status_after_payment', $order->getStoreId());
             $autoCapture = $this->getConfig('auto_capture', $order->getStoreId());
+            
+            $paymentMethod = $order->getPayment()->getMethodInstance()->getCode();
+            if ($this->isReepayPaymentMethod($paymentMethod) && $order->getPayment()->getMethodInstance()->isAutoCapture()) {
+                $autoCapture = 1;
+            }
+
             if (!empty($orderStatusAfterPayment) && $autoCapture) {
                 $totalDue = $this->_priceHelper->currency($order->getTotalDue(), true, false);
                 $order->setState($orderStatusAfterPayment, true);
@@ -758,8 +808,8 @@ class Data extends AbstractHelper
             }
 
             return  $transactionId;
-        } catch (Exception $e) {
-            throw new \Magento\framework\Exception\PaymentException(__('addCaptureTransactionToOrder() Exception : ' . $e->getMessage()));
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\PaymentException(__('addCaptureTransactionToOrder() Exception : ' . $e->getMessage()));
 
             return;
         }
@@ -791,6 +841,7 @@ class Data extends AbstractHelper
      *
      * @param \Magento\Sales\Model\Order $order
      * @param array $transactionData
+     * @param array $chargeRes
      * @return int (Magento Transaction ID)
      */
     public function addRefundTransactionToOrder($order, $transactionData = [], $chargeRes = [])
@@ -831,8 +882,8 @@ class Data extends AbstractHelper
             $order->save();
 
             return  $transaction->save()->getTransactionId();
-        } catch (Exception $e) {
-            throw new \Magento\framework\Exception\PaymentException(__('addRefundTransactionToOrder() Exception : ' . $e->getMessage()));
+        } catch (\Exception $e) {
+            throw new \Magento\Framework\Exception\PaymentException(__('addRefundTransactionToOrder() Exception : ' . $e->getMessage()));
 
             return;
         }
@@ -851,6 +902,7 @@ class Data extends AbstractHelper
 
     /**
      * Get SurchargeFee Enabled
+     *
      * @return bool
      */
     public function isSurchargeFeeEnabled()
@@ -859,7 +911,9 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $method
+     * Check is Reepay payment method
+     *
+     * @param string $method
      * @return bool
      */
     public function isReepayPaymentMethod($method = '')

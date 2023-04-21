@@ -2,13 +2,11 @@
 
 namespace Radarsofthouse\Reepay\Block;
 
-/**
- * Class Paymenticons
- *
- * @package Radarsofthouse\Reepay\Block
- */
 class Paymenticons extends \Magento\Framework\View\Element\Template
 {
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $scopeConfig;
 
     /**
@@ -26,7 +24,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get payment icons for credit card payment
+     * Get payment icons for credit card payment
      *
      * @return array $paymentIcons
      */
@@ -35,8 +33,8 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
         $paymentIconsConfig = $this->scopeConfig->getValue('payment/reepay_payment/payment_icons', $storeScope);
         
-        if( empty($paymentIconsConfig) ){
-            return [];  
+        if (empty($paymentIconsConfig)) {
+            return [];
         }
 
         $paymentIcons = explode(',', $paymentIconsConfig);
@@ -45,7 +43,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Viabill payment icon
+     * Get Viabill payment icon
      *
      * @return array $paymentIcon
      */
@@ -63,7 +61,25 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get mobile pay payment icon
+     * Get AnyDay payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getAnydayPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_anyday/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['anyday'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get mobile pay payment icon
      *
      * @return array $paymentIcon
      */
@@ -81,7 +97,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Applepay payment icon
+     * Get Applepay payment icon
      *
      * @return array $paymentIcon
      */
@@ -99,7 +115,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Paypal payment icon
+     * Get Paypal payment icon
      *
      * @return array $paymentIcon
      */
@@ -117,13 +133,12 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Klarna Pay Now payment icon
+     * Get Klarna Pay Now payment icon
      *
      * @return array $paymentIcon
      */
     public function getKlarnapaynowPaymentIcon()
     {
-
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
         $showIcon = $this->scopeConfig->getValue('payment/reepay_klarnapaynow/show_icon', $storeScope);
 
@@ -136,13 +151,12 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Klarna Pay Later payment icon
+     * Get Klarna Pay Later payment icon
      *
      * @return array $paymentIcon
      */
     public function getKlarnapaylaterPaymentIcon()
     {
-
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
         $showIcon = $this->scopeConfig->getValue('payment/reepay_klarnapaylater/show_icon', $storeScope);
 
@@ -155,13 +169,12 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Klarna Slice It payment icon
+     * Get Klarna Slice It payment icon
      *
      * @return array $paymentIcon
      */
     public function getKlarnaSliceItPaymentIcon()
     {
-
         $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
         $showIcon = $this->scopeConfig->getValue('payment/reepay_klarnasliceit/show_icon', $storeScope);
 
@@ -174,7 +187,43 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Swish payment icon
+     * Get Klarna Direct Bank Transfer payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getKlarnaDirectBankTransferPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_klarnadirectbanktransfer/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['klarna-direct-bank-transfer'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get Klarna Direct Debit payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getKlarnaDirectDebitPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_klarnadirectdebit/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['klarna-direct-debit'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get Swish payment icon
      *
      * @return array $paymentIcon
      */
@@ -192,7 +241,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Resurs payment icon
+     * Get Resurs payment icon
      *
      * @return array $paymentIcon
      */
@@ -210,7 +259,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Resurs payment icon
+     * Get Vipps payment icon
      *
      * @return array $paymentIcon
      */
@@ -228,7 +277,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Forbrugsforeningen payment icon
+     * Get Forbrugsforeningen payment icon
      *
      * @return array $paymentIcon
      */
@@ -246,7 +295,7 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * get Google pay payment icon
+     * Get Google pay payment icon
      *
      * @return array $paymentIcon
      */
@@ -258,6 +307,132 @@ class Paymenticons extends \Magento\Framework\View\Element\Template
         $paymentIcon = [];
         if ($showIcon) {
             $paymentIcon = ['googlepay'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get iDEAL payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getIdealPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_ideal/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['ideal'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get BLIK payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getBlikPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_blik/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['blik'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get Przelewy24 (P24) payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getP24PaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_p24/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['p24'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get Verkkopankki payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getVerkkopankkiPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_verkkopankki/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['verkkopankki'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get giropay payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getGiropayPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_giropay/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['giropay'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get SEPA Direct Debit payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getSepaPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_sepa/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['sepa'];
+        }
+
+        return $paymentIcon;
+    }
+
+    /**
+     * Get Bancontact payment icon
+     *
+     * @return array $paymentIcon
+     */
+    public function getBancontactPaymentIcon()
+    {
+        $storeScope = \Magento\Store\Model\ScopeInterface::SCOPE_STORES;
+        $showIcon = $this->scopeConfig->getValue('payment/reepay_bancontact/show_icon', $storeScope);
+
+        $paymentIcon = [];
+        if ($showIcon) {
+            $paymentIcon = ['bancontact'];
         }
 
         return $paymentIcon;

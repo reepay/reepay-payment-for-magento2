@@ -5,22 +5,37 @@ namespace Radarsofthouse\Reepay\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 
-/**
- * Class Logger
- *
- * @package Radarsofthouse\Reepay\Helper
- */
 class Logger extends AbstractHelper
 {
     const CONFIG_PATH = 'log_level';
+
+    /**
+     * @var \Monolog\Logger
+     */
     private $loggerLevel = \Monolog\Logger::EMERGENCY;
+
+    /**
+     * @var \Radarsofthouse\Reepay\Logger\Debug
+     */
     private $debugLogger;
+
+    /**
+     * @var \Radarsofthouse\Reepay\Logger\Info
+     */
     private $infoLogger;
+
+    /**
+     * @var \Radarsofthouse\Reepay\Logger\Error
+     */
     private $errorLogger;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $scopeConfig;
 
     /**
-     * constructor.
+     * Constructor
      *
      * @param \Magento\Framework\App\Action\Context $context
      * @param Data $dataHelper
@@ -46,10 +61,11 @@ class Logger extends AbstractHelper
     }
 
     /**
-     * log debug
+     * Log debug
      *
      * @param string $message
      * @param array $context
+     * @param boolean $isApi
      * @return void
      */
     public function addDebug($message, $context = [], $isApi = false)
@@ -59,18 +75,19 @@ class Logger extends AbstractHelper
             $logConfig = $this->scopeConfig->getValue('payment/reepay_payment/log', $storeScope);
 
             if ($logConfig == 1 && $isApi) {
-                $this->debugLogger->addDebug($message, $context);
+                $this->debugLogger->debug($message, $context);
             } elseif ($logConfig == 2) {
-                $this->debugLogger->addDebug($message, $context);
+                $this->debugLogger->debug($message, $context);
             }
         }
     }
 
     /**
-     * log info
+     * Log info
      *
      * @param string $message
      * @param array $context
+     * @param boolean $isApi
      * @return void
      */
     public function addInfo($message, $context = [], $isApi = false)
@@ -80,18 +97,19 @@ class Logger extends AbstractHelper
             $logConfig = $this->scopeConfig->getValue('payment/reepay_payment/log', $storeScope);
 
             if ($logConfig == 1 && $isApi) {
-                $this->infoLogger->addInfo($message, $context);
+                $this->infoLogger->info($message, $context);
             } elseif ($logConfig == 2) {
-                $this->infoLogger->addInfo($message, $context);
+                $this->infoLogger->info($message, $context);
             }
         }
     }
 
     /**
-     * log error
+     * Log error
      *
      * @param string $message
      * @param array $context
+     * @param boolean $isApi
      * @return void
      */
     public function addError($message, $context = [], $isApi = false)
@@ -101,9 +119,9 @@ class Logger extends AbstractHelper
             $logConfig = $this->scopeConfig->getValue('payment/reepay_payment/log', $storeScope);
 
             if ($logConfig == 1 && $isApi) {
-                $this->errorLogger->addError($message, $context);
+                $this->errorLogger->error($message, $context);
             } elseif ($logConfig == 2) {
-                $this->errorLogger->addError($message, $context);
+                $this->errorLogger->error($message, $context);
             }
         }
     }

@@ -17,6 +17,13 @@ class UpgradeSchema implements UpgradeSchemaInterface
      */
     public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productMetadata = $objectManager->get(\Magento\Framework\App\ProductMetadataInterface::class);
+        $magentoMinorVersion = (int)explode(".", $productMetadata->getVersion())[1];
+        if($magentoMinorVersion >= 3 ){
+            return;
+        }
+
         $quoteTable = 'quote';
         $orderTable = 'sales_order';
         $invoiceTable = 'sales_invoice';

@@ -2,11 +2,6 @@
 
 namespace Radarsofthouse\Reepay\Model\Config\Source;
 
-/**
- * Class Paymenticons
- *
- * @package Radarsofthouse\Reepay\Model\Config\Source
- */
 class Paymenticons implements \Magento\Framework\Option\ArrayInterface
 {
     /**
@@ -28,16 +23,22 @@ class Paymenticons implements \Magento\Framework\Option\ArrayInterface
             ['value' => 'mobilepay', 'label' => __('Mobilepay')],
             ['value' => 'unionpay', 'label' => __('Unionpay')],
             ['value' => 'viabill', 'label' => __('Viabill')],
+            ['value' => 'anyday', 'label' => __('Anyday')],
             ['value' => 'visa', 'label' => __('Visa')],
             ['value' => 'visa-electron', 'label' => __('Visa electron')],
             ['value' => 'klarna-pay-later', 'label' => __('Klarna Pay Later')],
             ['value' => 'klarna-pay-now', 'label' => __('Klarna Pay Now')],
             ['value' => 'klarna-slice-it', 'label' => __('Klarna Slice It')],
+            ['value' => 'klarna-direct-bank-transfer', 'label' => __('Klarna Direct Bank Transfer')],
+            ['value' => 'klarna-direct-debit', 'label' => __('Klarna Direct Debit')],
             ['value' => 'applepay', 'label' => __('Apple Pay')],
             ['value' => 'paypal', 'label' => __('PayPal')],
             ['value' => 'resurs', 'label' => __('Resurs Bank')],
             ['value' => 'vipps', 'label' => __('Vipps')],
             ['value' => 'googlepay', 'label' => __('Google Pay')],
+            ['value' => 'blik', 'label' => __('BLIK')],
+            ['value' => 'p24', 'label' => __('Przelewy24 (P24)')],
+            ['value' => 'giropay', 'label' => __('giropay')]
         ];
     }
 }
